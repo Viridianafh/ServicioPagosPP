@@ -1,0 +1,130 @@
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csprojAssemblyReference.cache
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CoreCompileInputs.cache
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.config
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.pdb
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.dll
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.xml
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CopyComplete
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.pdb
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\BouncyCastle.Crypto.dll
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.dll
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.xml
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.application
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Repositorio\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.application
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.config
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.application
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.pdb
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.dll
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.xml
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.AssemblyReference.cache
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CoreCompileInputs.cache
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.application
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CopyComplete
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.pdb
+C:\Users\Becarios Desarrollo\Desktop\ServicioValidaPagos\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.SuggestedBindingRedirects.cache
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.AssemblyReference.cache
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.SuggestedBindingRedirects.cache
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CoreCompileInputs.cache
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.pdb
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.config
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.application
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.pdb
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.HashCode.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Npgsql.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Buffers.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Collections.Immutable.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Diagnostics.DiagnosticSource.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Memory.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Encodings.Web.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Json.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Channels.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.ValueTuple.dll
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.HashCode.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Extensions.Logging.Abstractions.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Npgsql.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Buffers.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Collections.Immutable.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Diagnostics.DiagnosticSource.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Memory.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Encodings.Web.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Json.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Channels.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.ValueTuple.xml
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.application
+C:\Users\DESARROLLO\Desktop\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CopyComplete
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.config
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.application
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.exe
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\ConsultaWebApisPagos.pdb
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.HashCode.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Npgsql.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Buffers.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Collections.Immutable.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Diagnostics.DiagnosticSource.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Memory.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Encodings.Web.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Json.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Channels.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.ValueTuple.dll
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\itextsharp.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Bcl.HashCode.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Microsoft.Extensions.Logging.Abstractions.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\Npgsql.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Buffers.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Collections.Immutable.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Diagnostics.DiagnosticSource.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Memory.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Encodings.Web.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Text.Json.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Channels.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\bin\Debug\System.ValueTuple.xml
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.AssemblyReference.cache
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CoreCompileInputs.cache
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe.manifest
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.application
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.csproj.CopyComplete
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.exe
+C:\Users\Becarios Desarrollo\Documents\Proyectos SAG\ConsultaWebApisPagos\ConsultaWebApisPagos\obj\Debug\ConsultaWebApisPagos.pdb
