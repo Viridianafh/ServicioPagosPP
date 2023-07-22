@@ -10,8 +10,9 @@ namespace ConsultaWebApisPagos
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Version 6");
             DateTime hora_actual = DateTime.Now;
-            DateTime time_30,time_60;
+            DateTime time_30, time_60;
             time_30 = hora_actual.AddMinutes(-30);
             time_60 = hora_actual.AddMinutes(-60);
             string dia_actual = Convert.ToInt32(time_30.Day) < 10 ? "0" + (time_30.Day).ToString() : (time_30.Day).ToString();
@@ -31,15 +32,15 @@ namespace ConsultaWebApisPagos
 
             /*INICIO PRODUCTIVO*/
             Metodos.BuscarPagosMasterCard(day, starting_day, "0");
-            Metodos.BuscarPagosPayPal(day, starting_day, "0");
             Metodos.BuscarPagosMasterCard(starting_day, ending_day, "1");
+            Metodos.BuscarPagosPayPal(day, starting_day, "0");
             Metodos.BuscarPagosPayPal(starting_day, ending_day, "1");
             /*FIN PRODUCTIVO*/
 
             //INICIO PRUEBAS PAYNET
             Metodos.BuscarPagosPaynet();
-                //FIN PRUEBA PÁYNET
-                //Metodos.BuscarPagosPaynet();
+            //FIN PRUEBA PÁYNET
+            //Metodos.BuscarPagosPaynet();
         }
 
     }
