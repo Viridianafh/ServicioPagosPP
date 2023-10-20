@@ -26,6 +26,8 @@ namespace ConsultaWebApisPagos
             try
             {
                 correo.To.Add(mailDestinatario); //Correo destino?
+                correo.CC.Add("luis.rojas@transportesmedrano.com"); // Agregar una copia (CC)
+                //correo.CC.Add("viridiana.fh@transportesmedrano.com"); // Agregar una copia (CC)
                 correo.Subject = "Boletos SAG"; //Asunto
                                                 //correo.Body = MensajeHtml(ShortdId,Origen,Destino,fechaSalida.ToString("dd/MM/yyyy HH:mm"),fechaLlegada.ToString("dd/MM/yyyy HH:mm"), Total);
                 correo.AlternateViews.Add(MensajeHtml(ShortdId, Origen, Destino, fechaSalida, fechaLlegada, Total));
@@ -105,9 +107,9 @@ namespace ConsultaWebApisPagos
       "<td align = \"right\" valign=\"top\" style=\"font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; line-height: 48px;\"> " +
       "<table cellspacing = \"0\" cellpadding=\"0\" border=\"0\" align=\"right\"> " +
       "<tr><td style = \"font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400;\"> " +
-      "<p style=\"font-size: 18px; font-weight: 400; margin: 0; color: #ffffff;\"><a href = \"http://sagautobuses.com/\" target=\"_blank\" style=\"color: #ffffff; text-decoration: none;\">Comprar &nbsp;</a></p> " +
+      "<p style=\"font-size: 18px; font-weight: 400; margin: 0; color: #ffffff;\"><a href = \"https://sagautobuses.com/\" target=\"_blank\" style=\"color: #ffffff; text-decoration: none;\">Comprar &nbsp;</a></p> " +
       "</td><td style = \"font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 24px;\"> " +
-      "<a href=\"http://sagautobuses.com/\" target=\"_blank\" style=\"color: #ffffff; text-decoration: none;\"><img src = \"https://i.ibb.co/C9SJz95/shop.png\" width=\"27\" height=\"23\" style=\"display: block; border: 0px;\"/></a> " +
+      "<a href=\"https://sagautobuses.com/\" target=\"_blank\" style=\"color: #ffffff; text-decoration: none;\"><img src = \"https://i.ibb.co/C9SJz95/shop.png\" width=\"27\" height=\"23\" style=\"display: block; border: 0px;\"/></a> " +
       "</td></tr></table></td></tr></table></div></td></tr><tr><td align = \"center\" style=\"padding: 35px 35px 20px 35px; background-color: #ffffff;\" bgcolor=\"#ffffff\"> " +
       "<table align = \"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width:600px;\"><tr> " +
       "<td align = \"center\" style=\"font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 25px;\"> " +
@@ -144,10 +146,10 @@ namespace ConsultaWebApisPagos
       "<h2 style = \"font-size: 24px; font-weight: 800; line-height: 30px; color: #ffffff; margin: 0;\">DESCARGA TUS BOLETOS</h2></td></tr><tr> " +
       "<td align = \"center\" style= \"padding: 25px 0 15px 0;\"><table border = \"0\" cellspacing= \"0\" cellpadding= \"0\"><tr> " +
       "<td align = \"center\" style= \"border-radius: 5px;\" bgcolor= \"#66b3b7\"> " +
-      "<a href = \"http://sagautobuses.com/Boletos?Boleto=" + shorId + "&version=0\" target= \"_blank\" style= \"font-size: 18px; font-family: Open Sans, Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 5px; background-color: #66b3b7; padding: 15px 30px; border: 1px solid #66b3b7; display: block;\"> Nuestros Boletos</a> " +
+      "<a href = \"https://sagautobuses.com/Boletos?Boleto=" + shorId + "&version=0\" target= \"_blank\" style= \"font-size: 18px; font-family: Open Sans, Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 5px; background-color: #66b3b7; padding: 15px 30px; border: 1px solid #66b3b7; display: block;\"> Nuestros Boletos</a> " +
       "</td></tr></table></td></tr></table></td></tr><tr><td align = \"center\" style= \"padding: 35px; background-color: #ffffff;\" bgcolor= \"#ffffff\"> " +
       "<table align = \"center\" border= \"0\" cellpadding= \"0\" cellspacing= \"0\" width= \"100%\" style= \"max-width:600px;\"><tr><td align = \"center\"> " +
-      "<a href = \"http://sagautobuses.com/\" target= \"_blank\" style= \"color: #ffffff; text-decoration: none;\"><img src= \"https://i.ibb.co/KqfxXcx/logo-footer.png\" width= \"120\" height= \"70\" style= \"display: block; border: 0px;\" /></a> " +
+      "<a href = \"https://sagautobuses.com/\" target= \"_blank\" style= \"color: #ffffff; text-decoration: none;\"><img src= \"https://i.ibb.co/KqfxXcx/logo-footer.png\" width= \"120\" height= \"70\" style= \"display: block; border: 0px;\" /></a> " +
       "</td></tr><tr><td align = \"center\" style= \"font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 24px; padding: 5px 0 10px 0;\"> " +
       "<p style = \"font-size: 14px; font-weight: 800; line-height: 18px; color: #333333;\">Av.Politécnico Nacional 4912 Col.Maximino<br>Avila Camacho(21, 57 km) <br>07380 Ciudad de México, México " +
       "</p></td></tr></table></td></tr></table></td></tr></table><table border = \"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"> " +

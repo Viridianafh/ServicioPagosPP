@@ -1,5 +1,6 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 using iTextSharp.text.pdf.qrcode;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,6 +23,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using static ConsultaWebApisPagos.Metodos;
 using static iTextSharp.text.pdf.AcroFields;
+using static System.Net.WebRequestMethods;
 
 namespace ConsultaWebApisPagos
 {
@@ -413,12 +415,14 @@ namespace ConsultaWebApisPagos
             DataTable tbl = new DataTable();
             bool Result = true;
             Console.WriteLine("Inicio: " + starting_day + "-Fin: " + ending_day + "-OP: " + op);
-            //string sqry = "SELECT * FROM internet_sale WHERE id='41bb5a65-4a0e-4a84-a219-e0787312a856'";
+            string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%aster%' AND payed = False AND source_meta IS NULL ORDER BY date_created DESC LIMIT 100";
             //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%mastercard%' AND date_created > '2022-12-07 23:37:00' ORDER BY date_created ASC";
-            string sqry = "SELECT payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider FROM internet_sale WHERE payment_provider LIKE '%aster%ard%' AND date_created >= now() - interval '70 minutes' AND source_meta IS NULL ORDER BY date_created ASC";
+            //string sqry = "SELECT payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider FROM internet_sale WHERE payment_provider LIKE '%aster%ard%' AND date_created >= now() - interval '70 minutes' AND source_meta IS NULL ORDER BY date_created ASC";
             //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider from internet_sale is2 where \r\nextract (month from date_created)=extract(month from now()) and extract(year from date_created)=extract(year from now())\r\nand source_meta is null and upper(payment_provider) like upper('%aster%ard%')";
             //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider \r\nfrom internet_sale \r\nwhere date_created >='2023-04-01' \r\nand payment_provider like '%aster%ard%'\r\nand source_meta is null";
-            try { tbl = mandaQry(sqry); }
+            try { 
+                tbl = mandaQry(sqry); 
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -438,7 +442,7 @@ namespace ConsultaWebApisPagos
                         {
                             try
                             {
-                                GenerarBoleto(Convert.ToString(row["id"]));
+                                string ticket=GenerarBoleto(Convert.ToString(row["id"]));
                                 Console.WriteLine("Se genero el ticket correctamente");
                                 origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
                                 destino = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "destino");
@@ -449,7 +453,7 @@ namespace ConsultaWebApisPagos
                                 Console.WriteLine("Exito se verifico el pago: " + short_id);
                                 try
                                 {
-                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                                     concepto = "Validado y envio de correo";
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
@@ -636,9 +640,9 @@ namespace ConsultaWebApisPagos
             return descripcion;
         }
 
-        public static bool GenerarBoleto(string internet_sale_id)
+        public static string GenerarBoleto(string internet_sale_id)
         {
-            bool res = true;
+            string res = "";
             DateTime fecha = DateTime.Now;
             //fecha.AddHours(-6);
             /*
@@ -652,6 +656,7 @@ namespace ConsultaWebApisPagos
             foreach (DataRow row3 in tbl2.Rows)
             {
                 string ticketid = GenShortId();
+                res = ticketid;
                 while (tick == 0)
                 {
                     string qry21 = "SELECT * FROM trip_seat WHERE ticket_id='" + ticketid + "'";
@@ -740,6 +745,10 @@ namespace ConsultaWebApisPagos
             Console.WriteLine("Inicio: " + starting_day + "-Fin: " + ending_day + "-OP: " + op);
             //Console.WriteLine(hora_actual);
             string dia_actual = Convert.ToInt32(hora_actual.Day) < 10 ? "0" + (hora_actual.Day).ToString() : (hora_actual.Day).ToString();
+            DateTime fechai = DateTime.Parse(starting_day);
+            string fechaFormateadai = fechai.AddHours(6).ToString("yyyy-MM-dd HH:mm:ss");
+            DateTime fechaf = DateTime.Parse(ending_day);
+            string fechaFormateadaf = fechaf.AddHours(6).ToString("yyyy-MM-dd HH:mm:ss");
             string hora_inicio = hora_actual.Year + "-" + hora_actual.Month + "-" + dia_actual + " " + hora_actual.TimeOfDay.Hours + ":" + hora_actual.TimeOfDay.Minutes + ":00";
             bool verificacion = false;
             DataTable tbl = new DataTable();
@@ -748,7 +757,7 @@ namespace ConsultaWebApisPagos
             //string sqry = "SELECT * FROM internet_sale WHERE id='024da958-d486-4d02-b09c-5cd379eaa8fb'";
             //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%paypal%' AND date_created > '2022-12-07 10:36:00' ORDER BY date_created ASC";
             //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%paypal%' AND date_created > '" + hora_inicio + "' AND source_meta IS NULL AND bill_pdf is null ORDER BY date_created ASC";
-            string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%ay%al%' AND date_created < '" + starting_day + "' AND date_created > '" + ending_day + "' AND source_meta IS NULL AND bill_pdf is null ORDER BY date_created ASC";
+            string sqry = "SELECT * FROM internet_sale WHERE email='luis117rojas@gmail.com' AND payment_provider LIKE '%ay%al%' AND date_created < '" + fechaFormateadai + "' AND date_created > '" + fechaFormateadaf + "' AND source_meta IS NULL AND bill_pdf is null ORDER BY date_created ASC";
             try
             {
                 tbl = mandaQry(sqry);
@@ -772,7 +781,7 @@ namespace ConsultaWebApisPagos
                         {
                             try
                             {
-                                GenerarBoleto(Convert.ToString(row["id"]));
+                                string ticket=GenerarBoleto(Convert.ToString(row["id"]));
                                 Console.WriteLine("Se genero el ticket correctamente");
                                 origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
                                 destino = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "destino");
@@ -783,7 +792,7 @@ namespace ConsultaWebApisPagos
                                 Console.WriteLine("Exito se verifico el pago: " + short_id);
                                 try
                                 {
-                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                                     concepto = "Validado y envio de correo";
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
@@ -804,8 +813,8 @@ namespace ConsultaWebApisPagos
                                     mandaQry(sqryf);
                                     Console.WriteLine("Error al generar ticket para: " + short_id);
                                 }
-                                EnvioMail.EnviaCorreo("julio.jimenez@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
-                                EnvioMail.EnviaCorreo("ruben.salas@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
                             }
                         }
                         else
@@ -884,7 +893,7 @@ namespace ConsultaWebApisPagos
                 }
                 responseBody = ConfirmarPago(token, acces_token, total, shortId, internet_sale_id);
                 Console.WriteLine(responseBody);
-                if (responseBody != "")
+                if (responseBody == "COMPLETED")
                     res = true;
                 else
                     res = false;
@@ -917,6 +926,10 @@ namespace ConsultaWebApisPagos
                             if (Convert.ToString(rs[0].status) == "COMPLETED")
                             {
                                 responseBody = CapturarPayPal(shortId, internet_sale_id, amount);
+                            }
+                            else
+                            {
+                                responseBody = Convert.ToString(rs[0].status);
                             }
                         }
                     }
@@ -1079,7 +1092,7 @@ namespace ConsultaWebApisPagos
                         {
                             string sqry = "UPDATE pagos_procesados set id_estado=2,enviado_correo=1,estatus='PAGADO',fecha_enviado='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' where id_pago='" + idPago + "'";
                             mandaQry(sqry);
-                            GenerarBoleto(internet_sale_id);
+                            string ticket=GenerarBoleto(internet_sale_id);
                             Console.WriteLine("Se genero el ticket correctamente");
                             origen = ObtenerLugar(short_id, internet_sale_id, "origen");
                             destino = ObtenerLugar(short_id, internet_sale_id, "destino");
@@ -1090,7 +1103,7 @@ namespace ConsultaWebApisPagos
                             Console.WriteLine("Exito se verifico el pago: " + short_id);
                             try
                             {
-                                EnvioMail.EnviaCorreo(email, short_id, origen, destino, fecha_salida, fecha_llegada, decimal.Round(total_amount));
+                                EnvioMail.EnviaCorreo(email, ticket, origen, destino, fecha_salida, fecha_llegada, decimal.Round(total_amount));
                                 concepto = "Validado y envio de correo";
                                 string sqryf = "UPDATE internet_sale SET payment_provider ='paynet', source_meta='" + concepto + "' WHERE id='" + internet_sale_id + "'";
                                 mandaQry(sqryf);
@@ -1111,6 +1124,7 @@ namespace ConsultaWebApisPagos
                             mandaQry(sqryf);
                             Console.WriteLine("Error al generar ticket para: " + short_id);
                             EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", short_id, "", "", "", "", 0);
+                            EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", short_id, "", "", "", "", 0);
                         }
                     }
                     if ((Convert.ToString(rs[0].status)).ToUpper() == "CANCELLED")
@@ -1119,7 +1133,7 @@ namespace ConsultaWebApisPagos
                         mandaQry(sqry);
                         try
                         {
-                            sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                            sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
                             mandaQry(sqry);
                         }
                         catch
@@ -1142,6 +1156,7 @@ namespace ConsultaWebApisPagos
                         DataTable tbl = new DataTable();
                         DataTable tbl2 = new DataTable();
                         DateTime dateTime = DateTime.Now;
+                        dateTime = dateTime.AddHours(2);
                         DateTime departure_date_corrida = DateTime.Now;
                         string sqry = $"SELECT * FROM trip_seat WHERE internet_sale_id='{internet_sale_id}'";
                         tbl = mandaQry(sqry);
@@ -1153,7 +1168,8 @@ namespace ConsultaWebApisPagos
                             foreach (DataRow fila2 in tbl2.Rows)
                             {
                                 departure_date_corrida = DateTime.Parse(fila2["departure_date"].ToString());
-                                dateTime = dateTime.AddHours(2);
+                                departure_date_corrida = departure_date_corrida.AddHours(-5);
+                                
 
                                 if (dateTime >= departure_date_corrida)
                                 {
@@ -1165,7 +1181,7 @@ namespace ConsultaWebApisPagos
                                     catch { }
                                     try
                                     {
-                                        sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                                        sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
                                         mandaQry(sqry);
                                     }
                                     catch { }
