@@ -31,16 +31,18 @@ namespace ConsultaWebApisPagos
             //Console.ReadKey();
 
             /*INICIO PRODUCTIVO*/
+            Logs.crealogs("\n---------------------------------------------------------------INICIO EJECUCION---------------------------------------------------------------");
             Metodos.BuscarPagosMasterCard(day, starting_day, "0");
             Metodos.BuscarPagosMasterCard(starting_day, ending_day, "1");
-            //Metodos.BuscarPagosPayPal(day, starting_day, "0");
-            //Metodos.BuscarPagosPayPal(starting_day, ending_day, "1");
+            Metodos.BuscarPagosPayPal(day, starting_day, "0");
+            Metodos.BuscarPagosPayPal(starting_day, ending_day, "1");
             /*FIN PRODUCTIVO*/
 
             //INICIO PRUEBAS PAYNET
             //Metodos.BuscarPagosPaynet();
             //FIN PRUEBA PÁYNET
-            //Metodos.BuscarPagosPaynet();
+            Metodos.BuscarPagosPaynet();
+            Logs.crealogs("\n---------------------------------------------------------------FINAL EJECUCION---------------------------------------------------------------");
         }
 
     }

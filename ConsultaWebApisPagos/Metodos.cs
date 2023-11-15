@@ -1,29 +1,16 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.parser;
-using iTextSharp.text.pdf.qrcode;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
-using Org.BouncyCastle.Utilities.Collections;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Net.NetworkInformation;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using static ConsultaWebApisPagos.Metodos;
-using static iTextSharp.text.pdf.AcroFields;
-using static System.Net.WebRequestMethods;
 
 namespace ConsultaWebApisPagos
 {
@@ -402,6 +389,7 @@ namespace ConsultaWebApisPagos
         public static bool BuscarPagosMasterCard(string starting_day, string ending_day, string op)
         {
             Console.WriteLine("################----MasterCard----#######################");
+            Logs.crealogs("\n" + DateTime.Now.ToString() + " ################----MasterCard----#######################");
             //2022-12-06 23:24:15.2540000
             string concepto = "";
             string correo_envio = "", short_id = "", origen = "", destino = "", fecha_salida = "", fecha_llegada = "", fechas = "";
@@ -415,17 +403,23 @@ namespace ConsultaWebApisPagos
             DataTable tbl = new DataTable();
             bool Result = true;
             Console.WriteLine("Inicio: " + starting_day + "-Fin: " + ending_day + "-OP: " + op);
-            string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%aster%' AND payed = False AND source_meta IS NULL ORDER BY date_created DESC LIMIT 100";
+            Logs.crealogs(DateTime.Now.ToString() + " Inicio: " + starting_day + "-Fin: " + ending_day + "-OP: " + op);
+            DateTime actual = DateTime.Now.AddHours(-2);
+            string formattedDateTime = actual.ToString("yyyy-MM-dd HH:mm:ss.fffzzz");
+            //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%aster%' AND payed = False AND source_meta IS NULL ORDER BY date_created DESC LIMIT 100";
             //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%mastercard%' AND date_created > '2022-12-07 23:37:00' ORDER BY date_created ASC";
             //string sqry = "SELECT payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider FROM internet_sale WHERE payment_provider LIKE '%aster%ard%' AND date_created >= now() - interval '70 minutes' AND source_meta IS NULL ORDER BY date_created ASC";
+            string sqry = $"select * from internet_sale where payment_provider like '%aster%ard%' AND NOT payment_provider like '%Gateway%' AND source_meta IS NULL AND date_created > '{formattedDateTime}' order by date_created desc";
             //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider from internet_sale is2 where \r\nextract (month from date_created)=extract(month from now()) and extract(year from date_created)=extract(year from now())\r\nand source_meta is null and upper(payment_provider) like upper('%aster%ard%')";
             //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider \r\nfrom internet_sale \r\nwhere date_created >='2023-04-01' \r\nand payment_provider like '%aster%ard%'\r\nand source_meta is null";
-            try { 
-                tbl = mandaQry(sqry); 
+            try
+            {
+                tbl = mandaQry(sqry);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Logs.crealogs(DateTime.Now.ToString() + " Error ejecucion query: " + ex.Message);
             }
 
             if (tbl.Rows.Count == 0)
@@ -436,14 +430,17 @@ namespace ConsultaWebApisPagos
                 {
                     if (Convert.ToString(row["payed"]) == "False")
                     {
+                        Logs.crealogs("\n" + DateTime.Now.ToString() + " Status internet_sale:" + row["payed"].ToString() + " short_id: " + row["short_id"].ToString());
                         DateTime creacion = Convert.ToDateTime(row["date_created"]);
                         verificacion = VerificarMasterCard(Convert.ToString(row["short_id"]));
                         if (verificacion == true)
                         {
+                            Logs.crealogs(DateTime.Now.ToString() + " Verificacion: " + verificacion.ToString());
                             try
                             {
-                                string ticket=GenerarBoleto(Convert.ToString(row["id"]));
+                                string ticket = GenerarBoleto(Convert.ToString(row["id"]));
                                 Console.WriteLine("Se genero el ticket correctamente");
+                                Logs.crealogs(DateTime.Now.ToString() + " Se genero el ticket correctamente: " + ticket);
                                 origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
                                 destino = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "destino");
                                 fechas = ObtenerFecha(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "llegada", origen, destino);
@@ -451,18 +448,21 @@ namespace ConsultaWebApisPagos
                                 fecha_salida = temp_fechas[0];
                                 fecha_llegada = temp_fechas[1];
                                 Console.WriteLine("Exito se verifico el pago: " + short_id);
+                                Logs.crealogs(DateTime.Now.ToString() + " Exito se verifico el pago: " + row["short_id"].ToString());
                                 try
                                 {
-                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                                     concepto = "Validado y envio de correo";
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Validado y envio de correo: " + row["email"]);
                                 }
                                 catch
                                 {
                                     concepto = "Error al enviar el correo";
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Error al enviar el correo: " + row["email"]);
                                 }
                             }
                             catch
@@ -473,39 +473,65 @@ namespace ConsultaWebApisPagos
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
                                     Console.WriteLine("Error al generar ticket para: " + short_id);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + short_id);
+                                    EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                    EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Correo enviado a: luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com");
                                 }
-                                EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
-                                EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+
                             }
                         }
                         else
                         {
-                            string idinternetsale = row["id"].ToString();
-                            DateTime limitinf = time.AddHours(5).AddMinutes(-10);
-                            DateTime limitsup = time.AddHours(5).AddMinutes(1);
-                            DateTime fecbolet = creacion.AddHours(1);
-                            if (op == "1" && fecbolet >= limitinf && fecbolet < limitsup)
+                            Logs.crealogs(DateTime.Now.ToString() + " verificacion: " + verificacion.ToString());
+                            DateTime fechaHora = DateTime.Parse(row["date_created"].ToString());
+                            fechaHora = fechaHora.AddHours(-5);
+                            if (op == "1" && DateTime.Now > fechaHora)
                             {
                                 string sqryf = "UPDATE internet_sale SET source_meta='No se valido el boleto en 1 hr' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                 mandaQry(sqryf);
+                                try
+                                {
+                                    sqryf = $"insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status, F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id, f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name, 'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created, CURRENT_TIMESTAMP from trip_seat f where f.internet_sale_id = '{row["id"].ToString()}'";
+                                    mandaQry(sqryf);
+
+                                    sqryf = $"DELETE FROM trip_seat WHERE internet_sale_id = '{row["id"].ToString()}'";
+                                    mandaQry(sqryf);
+                                }catch (Exception e)
+                                {
+                                    Logs.crealogs(DateTime.Now.ToString() + " " + e.Message);
+                                }                                
+
+                                Logs.crealogs(DateTime.Now.ToString() + " Tiempo agotado para: " + row["short_id"].ToString() + " No se valido el boleto en 1 hr.");
                             }
                         }
                     }
                     else if (Convert.ToString(row["payed"]) == "True" && Convert.ToString(row["source_meta"]) == "")
                     {
+                        Logs.crealogs("\n" + DateTime.Now.ToString() + " Status internet_sale: " + row["payed"]);
                         origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
                         destino = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "destino");
                         fechas = ObtenerFecha(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "llegada", origen, destino);
-                        if (fechas != "0")
+
+                        DataTable t = mandaQry($"SELECT t2.ticket_id FROM trip_seat t2 INNER JOIN internet_sale t1 ON t1.id=t2.internet_sale_id WHERE t1.id='{Convert.ToString(row["id"])}' LIMIT 1");
+                        string ticket = "";
+                        foreach (DataRow a in t.Rows)
+                        {
+                            ticket = a["ticket_id"].ToString();
+                        }
+                        bool v = false;
+                        v = VerificarMasterCard(row["short_id"].ToString());
+                        if (fechas != "0" && v == true)
                         {
                             var temp_fechas = fechas.Split(',');
                             fecha_salida = temp_fechas[0];
                             fecha_llegada = temp_fechas[1];
                             Console.WriteLine("Exito solo se enviara el correo");
-                            EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                            EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                             concepto = "Envio de correo";
                             string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                             mandaQry(sqryf);
+                            Logs.crealogs(DateTime.Now.ToString() + " Exito solo se enviara el correo: " + row["email"].ToString() + " Short_id: " + row["short_id"].ToString() + " Envio de correo.");
                         }
                     }
                 }
@@ -722,7 +748,13 @@ namespace ConsultaWebApisPagos
                 {
                     if ((Convert.ToString(rs[0].result) == "SUCCESS") && (Convert.ToString(rs[0].status) == "CAPTURED"))
                     {
+                        Logs.crealogs(DateTime.Now.ToString() + " Verificacion correcta: " + rs[0].result.ToString() + " " + rs[0].status.ToString() + " para: " + "short_id: " + short_id);
                         res = true;
+                    }
+                    else
+                    {
+                        Logs.crealogs(DateTime.Now.ToString() + " Verificacion incorrecta: " + rs[0].result.ToString() + " " + rs[0].status.ToString() + " para: " + "short_id: " + short_id);
+                        res = false;
                     }
                 }
             }
@@ -737,12 +769,14 @@ namespace ConsultaWebApisPagos
         public static bool BuscarPagosPayPal(string starting_day, string ending_day, string op)
         {
             Console.WriteLine("################----PayPal----#######################");
+            Logs.crealogs("\n" + DateTime.Now.ToString() + " ################----PayPal----#######################");
             //2022-12-06 23:24:15.2540000
             string correo_envio = "", short_id = "", origen = "", destino = "", fecha_salida = "", fecha_llegada = "", fechas = "";
             DateTime hora_actual = DateTime.Now;
             string concepto = "";
             hora_actual = hora_actual.AddMinutes(-30);
             Console.WriteLine("Inicio: " + starting_day + "-Fin: " + ending_day + "-OP: " + op);
+            Logs.crealogs(DateTime.Now.ToString() + " Inicio: " + starting_day + "-Fin: " + ending_day + "-OP: " + op);
             //Console.WriteLine(hora_actual);
             string dia_actual = Convert.ToInt32(hora_actual.Day) < 10 ? "0" + (hora_actual.Day).ToString() : (hora_actual.Day).ToString();
             DateTime fechai = DateTime.Parse(starting_day);
@@ -754,10 +788,14 @@ namespace ConsultaWebApisPagos
             DataTable tbl = new DataTable();
             bool Result = true;
             Console.WriteLine("Inicio: " + hora_inicio);
+            DateTime dateTime = DateTime.Now.AddHours(-2); // Obtén la hora actual
+
+            string formattedDateTime = dateTime.ToString("yyyy-MM-dd HH:mm:ss.fffzzz");
             //string sqry = "SELECT * FROM internet_sale WHERE id='024da958-d486-4d02-b09c-5cd379eaa8fb'";
             //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%paypal%' AND date_created > '2022-12-07 10:36:00' ORDER BY date_created ASC";
-            //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%paypal%' AND date_created > '" + hora_inicio + "' AND source_meta IS NULL AND bill_pdf is null ORDER BY date_created ASC";
-            string sqry = "SELECT * FROM internet_sale WHERE email='luis117rojas@gmail.com' AND payment_provider LIKE '%ay%al%' AND date_created < '" + fechaFormateadai + "' AND date_created > '" + fechaFormateadaf + "' AND source_meta IS NULL AND bill_pdf is null ORDER BY date_created ASC";
+            //string sqry = "select * from internet_sale where email like '%linkrodriguez897@gmail.com%' order by date_created desc";
+            string sqry = $"SELECT * FROM internet_sale WHERE (payment_provider LIKE '%paypal%'  OR payment_provider like '%mastercardGateway%') AND  date_created > '{formattedDateTime}' AND source_meta IS NULL ORDER BY date_created ASC ";
+            //string sqry = "SELECT * FROM internet_sale WHERE email='luis117rojas@gmail.com' AND payment_provider LIKE '%ay%al%' AND date_created < '" + fechaFormateadai + "' AND date_created > '" + fechaFormateadaf + "' AND source_meta IS NULL AND bill_pdf is null ORDER BY date_created ASC";
             try
             {
                 tbl = mandaQry(sqry);
@@ -765,6 +803,7 @@ namespace ConsultaWebApisPagos
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Logs.crealogs(DateTime.Now.ToString() + " Error al ejecutar query: " + ex.Message);
             }
 
             if (tbl.Rows.Count == 0)
@@ -775,14 +814,17 @@ namespace ConsultaWebApisPagos
                 {
                     if (Convert.ToString(row["payed"]) == "False")
                     {
+                        Logs.crealogs("\n" + DateTime.Now.ToString() + " status internet_sale: " + row["payed"].ToString() + " id: " + row["id"].ToString());
                         DateTime creacion = Convert.ToDateTime(row["date_created"]);
                         verificacion = VerificarPayPal(Convert.ToString(row["full_response"]), Convert.ToString(row["total_amount"]), Convert.ToString(row["short_id"]), Convert.ToString(row["id"]));
                         if (verificacion == true)
                         {
+                            Logs.crealogs(DateTime.Now.ToString() + " verificacion correcta: " + verificacion.ToString());
                             try
                             {
-                                string ticket=GenerarBoleto(Convert.ToString(row["id"]));
+                                string ticket = GenerarBoleto(Convert.ToString(row["id"]));
                                 Console.WriteLine("Se genero el ticket correctamente");
+                                Logs.crealogs(DateTime.Now.ToString() + " Se genero el ticket correctamente: " + ticket);
                                 origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
                                 destino = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "destino");
                                 fechas = ObtenerFecha(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "llegada", origen, destino);
@@ -790,18 +832,21 @@ namespace ConsultaWebApisPagos
                                 fecha_salida = temp_fechas[0];
                                 fecha_llegada = temp_fechas[1];
                                 Console.WriteLine("Exito se verifico el pago: " + short_id);
+                                Logs.crealogs(DateTime.Now.ToString() + " Exito se verifico el pago: " + row["short_id"].ToString());
                                 try
                                 {
-                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                                    //EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                                     concepto = "Validado y envio de correo";
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Validado y envio de correo: " + row["email"].ToString());
                                 }
                                 catch
                                 {
                                     concepto = "Error al enviar el correo";
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Error al enviar el correo: " + row["email"].ToString());
                                 }
                             }
                             catch
@@ -812,37 +857,67 @@ namespace ConsultaWebApisPagos
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
                                     Console.WriteLine("Error al generar ticket para: " + short_id);
+                                    EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                    EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + row["short_id"].ToString() + "Envio correo a luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com");
                                 }
-                                EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
-                                EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", Convert.ToString(row["short_id"]), "", "", "", "", 0);
                             }
+
                         }
                         else
                         {
-                            if (op == "1")
+                            DateTime fechaHora = DateTime.Parse(row["date_created"].ToString());
+                            fechaHora = fechaHora.AddHours(-5);
+                            if (op == "1" && DateTime.Now >= fechaHora)
                             {
                                 concepto = "No se valido el boleto en 1 hr";
+
                                 string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                 mandaQry(sqryf);
+                                
+                                try
+                                {
+                                    sqryf = $"insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status, F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id, f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name, 'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created, CURRENT_TIMESTAMP from trip_seat f where f.internet_sale_id = '{row["id"].ToString()}'";
+                                    mandaQry(sqryf);
+
+                                    sqryf = $"DELETE FROM trip_seat WHERE internet_sale_id = '{row["id"].ToString()}'";
+                                    mandaQry(sqryf);
+                                }
+                                catch (Exception e)
+                                {
+                                    Logs.crealogs(DateTime.Now.ToString() + " " + e.Message);
+                                }
+
                                 Console.WriteLine("Error al generar ticket para: " + short_id);
+                                Logs.crealogs(DateTime.Now.ToString() + " Se agoto el tiempo para: " + row["short_id"].ToString() + " No se valido el boleto en 1 hr");
                             }
                         }
                     }
                     else if (Convert.ToString(row["payed"]) == "True")
                     {
+                        Logs.crealogs("\n" + DateTime.Now.ToString() + " status internet_sale: " + row["payed"].ToString());
                         origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
                         destino = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "destino");
                         fechas = ObtenerFecha(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "llegada", origen, destino);
-                        if (fechas != "0")
+
+                        DataTable t = mandaQry($"SELECT t2.ticket_id FROM trip_seat t2 INNER JOIN internet_sale t1 ON t1.id=t2.internet_sale_id WHERE t1.id='{Convert.ToString(row["id"])}' LIMIT 1");
+                        string ticket = "";
+                        foreach (DataRow a in t.Rows)
+                        {
+                            ticket = a["ticket_id"].ToString();
+                        }
+                        bool v = VerificarPayPal(Convert.ToString(row["full_response"]), Convert.ToString(row["total_amount"]), Convert.ToString(row["short_id"]), Convert.ToString(row["id"]));
+                        if (fechas != "0" && v == true)
                         {
                             var temp_fechas = fechas.Split(',');
                             fecha_salida = temp_fechas[0];
                             fecha_llegada = temp_fechas[1];
                             Console.WriteLine("Exito solo se enviara el correo");
-                            EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                            //EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                             concepto = "Envio de correo";
                             string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                             mandaQry(sqryf);
+                            Logs.crealogs(DateTime.Now.ToString() + " Exito solo se enviara el correo: " + row["email"].ToString() + " para: " + row["short_id"].ToString());
                         }
                     }
                 }
@@ -889,11 +964,12 @@ namespace ConsultaWebApisPagos
                 catch
                 {
                     Console.WriteLine("Error al capturar pago");
+                    Logs.crealogs(DateTime.Now.ToString() + " Error al capturar pago");
                     res = false;
                 }
                 responseBody = ConfirmarPago(token, acces_token, total, shortId, internet_sale_id);
                 Console.WriteLine(responseBody);
-                if (responseBody == "COMPLETED")
+                if (responseBody != "")
                     res = true;
                 else
                     res = false;
@@ -926,10 +1002,12 @@ namespace ConsultaWebApisPagos
                             if (Convert.ToString(rs[0].status) == "COMPLETED")
                             {
                                 responseBody = CapturarPayPal(shortId, internet_sale_id, amount);
+                                Logs.crealogs(DateTime.Now.ToString() + " status pago: COMPLETED");
                             }
                             else
                             {
-                                responseBody = Convert.ToString(rs[0].status);
+                                responseBody = "";
+                                Logs.crealogs(DateTime.Now.ToString() + " status pago: " + rs[0].status.ToString());
                             }
                         }
                     }
@@ -1040,6 +1118,7 @@ namespace ConsultaWebApisPagos
             try
             {
                 Console.WriteLine("################----PayNet----#######################");
+                Logs.crealogs("\n" + DateTime.Now.ToString() + " ################----PayNet----#######################");
                 bool verificacion = false;
                 DataTable tbl = new DataTable();
                 bool Result = true;
@@ -1090,9 +1169,10 @@ namespace ConsultaWebApisPagos
                     {
                         try
                         {
+                            Logs.crealogs("\n" + DateTime.Now.ToString() + " Se verifico el pago: " + rs[0].status.ToString() + " para: " + short_id);
                             string sqry = "UPDATE pagos_procesados set id_estado=2,enviado_correo=1,estatus='PAGADO',fecha_enviado='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' where id_pago='" + idPago + "'";
                             mandaQry(sqry);
-                            string ticket=GenerarBoleto(internet_sale_id);
+                            string ticket = GenerarBoleto(internet_sale_id);
                             Console.WriteLine("Se genero el ticket correctamente");
                             origen = ObtenerLugar(short_id, internet_sale_id, "origen");
                             destino = ObtenerLugar(short_id, internet_sale_id, "destino");
@@ -1101,18 +1181,21 @@ namespace ConsultaWebApisPagos
                             fecha_salida = temp_fechas[0];
                             fecha_llegada = temp_fechas[1];
                             Console.WriteLine("Exito se verifico el pago: " + short_id);
+                            Logs.crealogs(DateTime.Now.ToString() + " Se genero el ticket correctamente: " + ticket);
                             try
                             {
-                                EnvioMail.EnviaCorreo(email, ticket, origen, destino, fecha_salida, fecha_llegada, decimal.Round(total_amount));
+                                EnvioMail.EnviaCorreo(email, ticket, short_id, origen, destino, fecha_salida, fecha_llegada, decimal.Round(total_amount));
                                 concepto = "Validado y envio de correo";
                                 string sqryf = "UPDATE internet_sale SET payment_provider ='paynet', source_meta='" + concepto + "' WHERE id='" + internet_sale_id + "'";
                                 mandaQry(sqryf);
+                                Logs.crealogs(DateTime.Now.ToString() + " Validado y envio de correo: " + email);
                             }
                             catch
                             {
                                 concepto = "Error al enviar el correo";
                                 string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + internet_sale_id + "'";
                                 mandaQry(sqryf);
+                                Logs.crealogs(DateTime.Now.ToString() + " Errror al enviar correo a : " + email);
                                 //string sqry = "UPDATE pagos_procesados set id_estado=2,enviado_correo=1,estatus='PAGADO',fecha_enviado='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' where id_pago='" + idPago + "'";
                                 //mandaQry(sqry);
                             }
@@ -1123,36 +1206,44 @@ namespace ConsultaWebApisPagos
                             string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + internet_sale_id + "'";
                             mandaQry(sqryf);
                             Console.WriteLine("Error al generar ticket para: " + short_id);
-                            EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", short_id, "", "", "", "", 0);
-                            EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", short_id, "", "", "", "", 0);
+                            EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", "", short_id, "", "", "", "", 0);
+                            EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", "", short_id, "", "", "", "", 0);
+                            Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + short_id.ToString() + "Correo enviado a luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com");
                         }
                     }
                     if ((Convert.ToString(rs[0].status)).ToUpper() == "CANCELLED")
                     {
+                        Logs.crealogs(DateTime.Now.ToString() + " Se cancelo el pago para: " + short_id + " status: " + rs[0].status.ToString());
                         string sqry = "UPDATE pagos_procesados set id_estado=3,estatus='CANCELADO' ,fecha_enviado='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' where id_pago='" + idPago + "'";
                         mandaQry(sqry);
                         try
                         {
-                            sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                            sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
                             mandaQry(sqry);
+                            Logs.crealogs(DateTime.Now.ToString() + " Boleto movido a cancel reservation: " + internet_sale_id);
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            Console.WriteLine("Error Mover a Cancel_reservation");
+                            Console.WriteLine("Error Mover a Cancel_reservation: " + ex.Message);
+                            Logs.crealogs(DateTime.Now.ToString() + " Ocurrio un error al mover a cancel reservation: ");
                         }
                         try
                         {
                             sqry = "DELETE FROM trip_seat WHERE internet_sale_id = '" + internet_sale_id + "';";
                             mandaQry(sqry);
+                            Logs.crealogs(DateTime.Now.ToString() + " Bolet eliminado de trip seat: " + internet_sale_id);
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             Console.WriteLine("Error Eliminar");
+                            Logs.crealogs(DateTime.Now.ToString() + " Error al eliminar de trip seat: " + ex.Message);
                         }
                         Console.WriteLine("Pago Cancelado Para" + short_id);
+                        Logs.crealogs(DateTime.Now.ToString() + " Pago Cancelado Para" + short_id);
                     }
                     if ((Convert.ToString(rs[0].status)).ToUpper() == "IN_PROGRESS")
                     {
+                        Logs.crealogs("\n" + DateTime.Now.ToString() + " En espera de pago para: " + short_id + " status: " + rs[0].status.ToString());
                         DataTable tbl = new DataTable();
                         DataTable tbl2 = new DataTable();
                         DateTime dateTime = DateTime.Now;
@@ -1168,8 +1259,8 @@ namespace ConsultaWebApisPagos
                             foreach (DataRow fila2 in tbl2.Rows)
                             {
                                 departure_date_corrida = DateTime.Parse(fila2["departure_date"].ToString());
-                                departure_date_corrida = departure_date_corrida.AddHours(-5);
-                                
+                                departure_date_corrida = departure_date_corrida.AddHours(-6);
+
 
                                 if (dateTime >= departure_date_corrida)
                                 {
@@ -1177,27 +1268,39 @@ namespace ConsultaWebApisPagos
                                     {
                                         sqry = "update pagos_procesados set id_estado=3,estatus='CANCELADO',fecha_actualizacion='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' where internet_sale_id like '" + internet_sale_id + "'";
                                         mandaQry(sqry);
+                                        Logs.crealogs(DateTime.Now.ToString() + " Limite de tiempo exedido se liberara asiento: " + internet_sale_id);
                                     }
-                                    catch { }
+                                    catch (Exception ex)
+                                    {
+                                        Logs.crealogs(DateTime.Now.ToString() + " Error actualizar status pagos procesado: " + ex.Message);
+                                    }
                                     try
                                     {
-                                        sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                                        sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
                                         mandaQry(sqry);
+                                        Logs.crealogs(DateTime.Now.ToString() + " Asiento liberado correctamente: " + internet_sale_id);
                                     }
-                                    catch { }
+                                    catch (Exception ex)
+                                    {
+                                        Logs.crealogs(DateTime.Now.ToString() + " Ocurrio un error al liberar el asiento: " + internet_sale_id);
+                                    }
                                     try
                                     {
                                         sqry = "DELETE FROM trip_seat WHERE internet_sale_id = '" + internet_sale_id + "';";
                                         mandaQry(sqry);
+                                        Logs.crealogs(DateTime.Now.ToString() + " Boleto eliminado de trip_seat: " + internet_sale_id);
                                     }
-                                    catch { }
-
+                                    catch (Exception ex)
+                                    {
+                                        Logs.crealogs(DateTime.Now.ToString() + " Ocurrio un error al eliminar de trip_seat: " + internet_sale_id);
+                                    }
                                 }
                                 else
                                 {
                                     sqry = "update pagos_procesados set id_estado=1,estatus='PENDIENTE',fecha_actualizacion='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' where internet_sale_id like '" + internet_sale_id + "'";
                                     mandaQry(sqry);
                                     Console.WriteLine("Pago Pendiente Para" + short_id);
+                                    Logs.crealogs(DateTime.Now.ToString() + " Pago Pendiente Para" + short_id);
                                 }
                             }
                         }
@@ -1231,8 +1334,11 @@ namespace ConsultaWebApisPagos
                 comando.ExecuteNonQuery();//Revisar, se ejecuta de nuevo el query
                 conexion.Close();
                 tbl = new DataTable();
-                adaptador = new NpgsqlDataAdapter(comando);
-                adaptador.Fill(tbl);
+                if (sqry.StartsWith("SELECT") || sqry.StartsWith("select"))
+                {
+                    adaptador = new NpgsqlDataAdapter(comando);
+                    adaptador.Fill(tbl);
+                }
                 Result = "Conectado Exitoso";
             }
             return tbl;
@@ -1545,6 +1651,7 @@ namespace ConsultaWebApisPagos
     }
     public class payer
     {
+
         public string email_address { get; set; }
         public string payer_id { get; set; }
         public address1 address { get; set; }
