@@ -16,374 +16,8 @@ namespace ConsultaWebApisPagos
 {
     class Metodos
     {
-        public static string GetTipoCambio()
-        {
-            var requestToken = (HttpWebRequest)WebRequest.Create("https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/oportuno?token=ec27c3943c4b5364d99bffa92102e028c8c1421b996d438c669f1597067b685e");
-
-            requestToken.Method = "GET";
-            using (WebResponse responseToken = requestToken.GetResponse())
-            {
-                using (Stream strReader = responseToken.GetResponseStream())
-                {
-                    if (strReader == null) return "";
-                    using (StreamReader objReader = new StreamReader(strReader))
-                    {
-                        string responseBody = objReader.ReadToEnd();
-
-                        //accesos = JsonConvert.DeserializeObject<Token>(responseBody);
-                        // Do something with responseBody
-                        Console.WriteLine(responseBody);
-                    }
-                }
-            }
-            return "";
-        }
-        public static string SetPedidos()
-        {
-            DataTable TblCredenciales = new DataTable();
-            DataTable TblPagosPendientes = new DataTable();
-            DataTable TblTicketId = new DataTable();
-            DataTable TblProveedor = new DataTable();
-            Token accesos = new Token();
-            Ordenes orden = new Ordenes();
-            string sqry;
-            string[] separatingStrings = { "\"status\":\"", "\",\"amount\":" };
-            try
-            {
-                sqry = string.Format("ExtraeCredenciales {0}", "1");
-                TblCredenciales = ExtraeDatos(sqry);
-                if (TblCredenciales.Rows.Count > 0)
-                {
-                    var authData = string.Format("{0}:{1}", TblCredenciales.Rows[0][0].ToString(), TblCredenciales.Rows[0][1].ToString());
-                    var authHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
-
-                    var urlToken = TblCredenciales.Rows[0][3].ToString(); //https:\\putosilolees.com\
-                    var requestToken = (HttpWebRequest)WebRequest.Create(urlToken);
-                    requestToken.Headers.Add("Authorization", "Basic " + authHeaderValue);
-                    requestToken.Method = "POST";
-                    //requestToken.ContentType = "application/json";
-                    //requestToken.Accept = "application/json";
-
-
-                    using (WebResponse responseToken = requestToken.GetResponse())
-                    {
-                        using (Stream strReader = responseToken.GetResponseStream())
-                        {
-                            if (strReader == null) return "";
-                            using (StreamReader objReader = new StreamReader(strReader))
-                            {
-                                string responseBody = objReader.ReadToEnd();
-
-                                accesos = JsonConvert.DeserializeObject<Token>(responseBody);
-                                // Do something with responseBody
-                                Console.WriteLine(responseBody);
-                            }
-                        }
-                    }
-                }
-                sqry = String.Format("ExtraePagosPend {0}", "1");
-                TblPagosPendientes = ExtraeDatos(sqry);
-
-                for (int i = 0; i < TblPagosPendientes.Rows.Count; i++)
-                {
-
-                    var url = TblCredenciales.Rows[0][4].ToString() + TblPagosPendientes.Rows[i][0].ToString();
-                    var request = (HttpWebRequest)WebRequest.Create(url);
-                    request.Method = "GET";
-                    //request.Headers.Add("Authorization", "Bearer " + accesos.access_token);
-                    //request.ContentType = "application/json";
-                    //request.Accept = "application/json";
-                    string[] str;
-                    orden = new Ordenes();
-                    using (WebResponse response = request.GetResponse())
-                    {
-                        using (Stream strReader = response.GetResponseStream())
-                        {
-                            if (strReader == null) return "";
-                            using (StreamReader objReader = new StreamReader(strReader))
-                            {
-                                string responseBody = objReader.ReadToEnd();
-                                // Do something with responseBody
-                                str = responseBody.Split(separatingStrings, System.StringSplitOptions.RemoveEmptyEntries);
-
-                                // Do something with responseBody
-                                Console.WriteLine(responseBody);
-                            }
-                        }
-                    }
-                    if (str.Length == 6)
-                    {
-                        if (str[3].ToUpper() == "COMPLETED")
-                        {
-                            sqry = string.Format("ActualizaEstadoPago {0},'{1}'", "1", TblPagosPendientes.Rows[i][0].ToString());
-                            TblTicketId = ExtraeDatos(sqry);
-                            crearBoletosPdf(TblTicketId);
-
-                            Console.WriteLine("Exitoso");
-                            return "Exitoso";
-                        }
-                        else
-                        {
-                            Console.WriteLine("Pendiente");
-                            return "Pendiente";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("error " + ex.Message);
-                return "";
-            }
-            return "";
-        }
-
-        public static string setPedidosOpenPay()
-        {
-            DataTable TblCredenciales = new DataTable();
-            DataTable TblPagosPendientes = new DataTable();
-            DataTable TblTicketId = new DataTable();
-            DataTable TblProveedor = new DataTable();
-            openpay respuestas = new openpay();
-
-            string sqry;
-            string[] separatingStrings = { "\"status\":\"", "\",\"amount\":" };
-
-            sqry = String.Format("ExtraePagosPend {0}", "2");
-            TblPagosPendientes = ExtraeDatos(sqry);
-            sqry = string.Format("ExtraeCredenciales {0}", "2");
-            TblCredenciales = ExtraeDatos(sqry);
-            for (int i = 0; i < TblPagosPendientes.Rows.Count; i++)
-            {
-
-                if (TblCredenciales.Rows.Count > 0)
-                {
-                    var authData = string.Format("{0}:{1}", TblCredenciales.Rows[0][1].ToString(), TblCredenciales.Rows[0][5].ToString());
-                    var authHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
-
-                    var urlConsulta = TblCredenciales.Rows[0][4].ToString() + TblPagosPendientes.Rows[i][0].ToString();
-                    var requestToken = (HttpWebRequest)WebRequest.Create(urlConsulta);
-                    requestToken.Headers.Add("Authorization", "Basic " + authHeaderValue);
-                    requestToken.Method = "GET";
-
-                    using (WebResponse responseToken = requestToken.GetResponse())
-                    {
-                        using (Stream strReader = responseToken.GetResponseStream())
-                        {
-                            if (strReader == null) return "";
-                            using (StreamReader objReader = new StreamReader(strReader))
-                            {
-                                string responseBody = objReader.ReadToEnd();
-
-                                respuestas = JsonConvert.DeserializeObject<openpay>(responseBody);
-                                // Do something with responseBody
-                                Console.WriteLine(responseBody);
-
-                            }
-                        }
-                    }
-
-                    if (respuestas.status.ToUpper() == "COMPLETED")
-                    {
-                        sqry = string.Format("ActualizaEstadoPago {0},'{1}'", "2", TblPagosPendientes.Rows[i][0].ToString());
-                        TblTicketId = ExtraeDatos(sqry);
-                        crearBoletosPdf(TblTicketId);
-
-                        Console.WriteLine("Exitoso");
-                        //return "Exitoso";
-                    }
-                    if (respuestas.status.ToUpper() == "CANCELLED")
-                    {
-                        sqry = string.Format("CancelaEstadoPago {0},'{1}'", "2", TblPagosPendientes.Rows[i][0].ToString());
-                        TblTicketId = ExtraeDatos(sqry);
-                        Console.WriteLine("Pendiente");
-                        //return "Pendiente";
-                    }
-
-                }
-            }
-
-            return "";
-        }
-
-        public static string crearBoletosPdf(DataTable TblData)
-        {
-            string sqry;
-            Bitmap bm;
-            DateTime FechaSalida = DateTime.Parse(TblData.Rows[0][12].ToString());
-            DateTime FechaLlegada = DateTime.Parse(TblData.Rows[0][13].ToString());
-            int dine = 80;//-- ancho y alto de la img resultante
-
-            Document doc = new Document(PageSize.LETTER);
-            iTextSharp.text.Font _standardFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
-            string path = @"C:\ServicioPayPalOpenPay\pdf\Tickets" + TblData.Rows[0][9] + ".pdf";
-            string nombre = @"Tickets" + TblData.Rows[0][9];
-            // Indicamos donde vamos a guardar el documento
-            PdfWriter writer = PdfWriter.GetInstance(doc,
-                                        new FileStream(path, FileMode.Create));
-            // Le colocamos el título y el autor
-            // **Nota: Esto no será visible en el documento
-            doc.AddTitle("Boletos SAG");
-            doc.AddCreator("SAG Autobuses del Golfo");
-
-            // Abrimos el archivo
-            doc.Open();
-
-            // Escribimos el encabezamiento en el documento
-            doc.Add(new Paragraph("Mis Pases SAG"));
-            doc.Add(Chunk.NEWLINE);
-
-            doc.Add(new Phrase("Asegurate de imprimir este documento o llevarlo en tu smartphone, ya que deberas presentarlo con una identificación oficial y tu voucher de pago antes de abordar para nuestro viaje.", _standardFont));
-            doc.Add(Chunk.NEWLINE);
-            doc.Add(new Phrase("Te agradecemos que viajes con nosotros.", _standardFont));
-
-            doc.Add(Chunk.NEWLINE);
-            doc.Add(new Phrase("Origen: " + TblData.Rows[0][6].ToString() + "     Destino:  " + TblData.Rows[0][7].ToString(), _standardFont));
-            doc.Add(Chunk.NEWLINE);
-            doc.Add(new Phrase("Salida: " + FechaSalida.ToString("dd/MM/yyyy HH:mm") + "     Llegada:  " + FechaLlegada.ToString("dd/MM/yyyy HH:mm"), _standardFont));
-
-            //doc.Add(pdfImage);
-
-            // Creamos una tabla que contendrá el nombre, apellido y país
-            // de nuestros visitante.
-            PdfPTable tblPrueba = new PdfPTable(5);
-            tblPrueba.WidthPercentage = 100;
-
-            // Configuramos el título de las columnas de la tabla
-            PdfPCell clNombre = new PdfPCell(new Phrase("Nombre Pasajero", _standardFont));
-            clNombre.BorderWidth = 0;
-            clNombre.BorderWidthBottom = 0.75f;
-
-            PdfPCell clOrigen = new PdfPCell(new Phrase("Origen", _standardFont));
-            clOrigen.BorderWidth = 0;
-            clOrigen.BorderWidthBottom = 0.75f;
-
-            PdfPCell clDestino = new PdfPCell(new Phrase("Destino", _standardFont));
-            clDestino.BorderWidth = 0;
-            clDestino.BorderWidthBottom = 0.75f;
-
-            PdfPCell clAsiento = new PdfPCell(new Phrase("Asiento", _standardFont));
-            clAsiento.BorderWidth = 0;
-            clAsiento.BorderWidthBottom = 0.75f;
-
-            PdfPCell clQrCode = new PdfPCell(new Phrase("QR", _standardFont));
-            clQrCode.BorderWidth = 0;
-            clQrCode.BorderWidthBottom = 0.75f;
-
-            // Añadimos las celdas a la tabla
-            tblPrueba.AddCell(clNombre);
-            tblPrueba.AddCell(clOrigen);
-            tblPrueba.AddCell(clDestino);
-            tblPrueba.AddCell(clAsiento);
-            tblPrueba.AddCell(clQrCode);
-
-            for (int i = 0; i < TblData.Rows.Count; i++)
-            {
-                BarcodeQRCode datam = new BarcodeQRCode(TblData.Rows[i][3].ToString(), dine, dine, null);
-                iTextSharp.text.Image pdfImage = datam.GetImage();
-                // Llenamos la tabla con información
-                clNombre = new PdfPCell(new Phrase(TblData.Rows[i][0].ToString(), _standardFont)); //Nombre
-                clNombre.BorderWidth = 0;
-
-                clOrigen = new PdfPCell(new Phrase(TblData.Rows[i][6].ToString(), _standardFont));//Origen
-                clOrigen.BorderWidth = 0;
-
-                clDestino = new PdfPCell(new Phrase(TblData.Rows[i][7].ToString(), _standardFont));//Destino
-                clDestino.BorderWidth = 0;
-
-                clAsiento = new PdfPCell(new Phrase(TblData.Rows[i][1].ToString(), _standardFont));//Asiento
-                clAsiento.BorderWidth = 0;
-
-                clQrCode = new PdfPCell(pdfImage);//QR
-                clQrCode.BorderWidth = 0;
-
-                // Añadimos las celdas a la tabla
-                tblPrueba.AddCell(clNombre);
-                tblPrueba.AddCell(clOrigen);
-                tblPrueba.AddCell(clDestino);
-                tblPrueba.AddCell(clAsiento);
-                tblPrueba.AddCell(clQrCode);
-
-
-            }
-
-            doc.Add(tblPrueba);
-            doc.Close();
-            writer.Close();
-
-            double Total = double.Parse(TblData.Rows[0][14].ToString());
-            //bool v=EnvioMail.EnviaCorreo(path,nombre, TblData.Rows[0][8].ToString(),TblData.Rows[0][10].ToString(), TblData.Rows[0][6].ToString(), TblData.Rows[0][7].ToString(),FechaSalida,FechaLlegada ,Total);
-            /*
-            if (v)
-            {
-                sqry = string.Format("ActualizaEstadoEnvio '{0}',{1}", TblData.Rows[0][9].ToString(),"2");
-                ExtraeDatos(sqry);
-            }
-            */
-            return "Exito";
-        }
-
-        private static DataTable ExtraeDatos(string sqry)
-        {
-            DataTable tbl = new DataTable();
-            string cadenaconexion = "Server = 192.168.0.245;Database = DB_TurismoOmnibus; Connection Timeout = 2; Pooling = false;User ID = sa; Password = Med*8642; Trusted_Connection = False";
-            SqlConnection conexion = new SqlConnection(cadenaconexion);
-            SqlCommand comando;
-            SqlDataAdapter adaptador;
-            if (!string.IsNullOrWhiteSpace(cadenaconexion))
-            {
-
-                comando = new SqlCommand(sqry, conexion);
-                comando.CommandType = CommandType.Text;
-                conexion.Open();
-                comando.ExecuteNonQuery();
-                conexion.Close();
-                tbl = new DataTable();
-                adaptador = new SqlDataAdapter(comando);
-                adaptador.Fill(tbl);
-            }
-
-            return tbl;
-        }
-        #region DatosBoleto
-        public static string DatosBoleto(string internet_sale_id)
-        {
-            string Origen = "", Destino = "";
-            string res = "";
-            int minutosSalida = 0, minutosLlegada = 0;
-            DataTable tbl = new DataTable();
-            bool Result = true;
-            string sqry = "SELECT starting_stop_id,ending_stop_id FROM trip_seat WHERE internet_sale_id='" + internet_sale_id + "' LIMIT 1";
-            tbl = mandaQry(sqry);
-            foreach (DataRow row in tbl.Rows)
-            {
-                string sqry1 = "SELECT t1.name as Origen,t2.name as Destino FROM stop_off t1,stop_off t2 WHERE t1.id='" + row["starting_stop_id"] + "' AND t2.id='" + row["ending_stop_id"] + "' LIMIT 1";
-                tbl = mandaQry(sqry1);
-                foreach (DataRow row1 in tbl.Rows)
-                {
-                    Origen = Convert.ToString(row1["Origen"]);
-                    Destino = Convert.ToString(row1["Destino"]);
-                    string sqry2 = "SELECT route_id FROM stop_off WHERE id='" + row["starting_stop_id"] + "' LIMIT 1";
-                    tbl = mandaQry(sqry2);
-                    foreach (DataRow row2 in tbl.Rows)
-                    {
-                        string sqry3 = "SELECT * FROM stop_off WHERE route_id='" + row2["route_id"] + "'";
-                        tbl = mandaQry(sqry3);
-                        foreach (DataRow row3 in tbl.Rows)
-                        {
-                            minutosSalida += Convert.ToInt32(row3["travel_minutes"]);
-                            minutosLlegada += Convert.ToInt32(row3["travel_minutes"]);
-                            if ((Convert.ToString(row3["waiting_minutes"]) != "") || (Convert.ToString(row3["waiting_minutes"]) == "0"))
-                            {
-                                minutosSalida += Convert.ToInt32(row3["waiting_minutes"]);
-                                minutosLlegada += Convert.ToInt32(row3["waiting_minutes"]);
-                            }
-                        }
-                    }
-                }
-            }
-            return res;
-        }
+        
+        #region DatosBoleto       
         #endregion DatosBoleto
         #region MasterCard
         public static bool BuscarPagosMasterCard(string starting_day, string ending_day, string op)
@@ -406,10 +40,21 @@ namespace ConsultaWebApisPagos
             Logs.crealogs(DateTime.Now.ToString() + " Inicio: " + starting_day + "-Fin: " + ending_day + "-OP: " + op);
             DateTime actual = DateTime.Now.AddHours(-2);
             string formattedDateTime = actual.ToString("yyyy-MM-dd HH:mm:ss.fffzzz");
-            //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%aster%' AND payed = False AND source_meta IS NULL ORDER BY date_created DESC LIMIT 100";
+            string sqry = @"SELECT * 
+                            FROM internet_sale 
+                            WHERE payment_provider LIKE '%aster%ard%' 
+                            AND NOT payment_provider LIKE '%Gateway%' 
+                            --AND payed = False 
+                            AND ((source_meta NOT LIKE 'Validado y envio de correo' 
+                            AND source_meta NOT LIKE '%Envio de correo%')
+							OR source_meta IS NULL)
+                            AND date_created >= CURRENT_DATE - INTERVAL '5 hour' 
+                            ORDER BY date_created DESC";
+            //string sqry = "SELECT * FROM internet_sale where email='luis117rojas@gmail.com' and source_meta is null and payed=false";
             //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%mastercard%' AND date_created > '2022-12-07 23:37:00' ORDER BY date_created ASC";
             //string sqry = "SELECT payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider FROM internet_sale WHERE payment_provider LIKE '%aster%ard%' AND date_created >= now() - interval '70 minutes' AND source_meta IS NULL ORDER BY date_created ASC";
-            string sqry = $"select * from internet_sale where payment_provider like '%aster%ard%' AND NOT payment_provider like '%Gateway%' AND source_meta IS NULL AND date_created > '{formattedDateTime}' order by date_created desc";
+            //string sqry = $"select * from internet_sale where payment_provider like '%aster%ard%' AND NOT payment_provider like '%Gateway%' AND source_meta IS NULL AND date_created > '{formattedDateTime}' order by date_created desc";
+            //string sqry = $"select * from internet_sale where payment_provider like '%aster%ard%' AND short_id='cbd626f2'";
             //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider from internet_sale is2 where \r\nextract (month from date_created)=extract(month from now()) and extract(year from date_created)=extract(year from now())\r\nand source_meta is null and upper(payment_provider) like upper('%aster%ard%')";
             //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider \r\nfrom internet_sale \r\nwhere date_created >='2023-04-01' \r\nand payment_provider like '%aster%ard%'\r\nand source_meta is null";
             try
@@ -438,7 +83,12 @@ namespace ConsultaWebApisPagos
                             Logs.crealogs(DateTime.Now.ToString() + " Verificacion: " + verificacion.ToString());
                             try
                             {
-                                string ticket = GenerarBoleto(Convert.ToString(row["id"]));
+                                string ticket = "";
+                                while (ticket == "")
+                                {
+                                    ticket = GenerarBoleto(Convert.ToString(row["id"]));
+                                }
+                                
                                 Console.WriteLine("Se genero el ticket correctamente");
                                 Logs.crealogs(DateTime.Now.ToString() + " Se genero el ticket correctamente: " + ticket);
                                 origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
@@ -485,19 +135,39 @@ namespace ConsultaWebApisPagos
                         {
                             Logs.crealogs(DateTime.Now.ToString() + " verificacion: " + verificacion.ToString());
                             DateTime fechaHora = DateTime.Parse(row["date_created"].ToString());
-                            fechaHora = fechaHora.AddHours(-5);
+                            fechaHora = fechaHora.AddHours(+1);
                             if (op == "1" && DateTime.Now > fechaHora)
                             {
                                 string sqryf = "UPDATE internet_sale SET source_meta='No se valido el boleto en 1 hr' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                 mandaQry(sqryf);
                                 try
                                 {
-                                    sqryf = $"insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status, F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id, f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name, 'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created, CURRENT_TIMESTAMP from trip_seat f where f.internet_sale_id = '{row["id"].ToString()}'";
-                                    mandaQry(sqryf);
-
-                                    sqryf = $"DELETE FROM trip_seat WHERE internet_sale_id = '{row["id"].ToString()}'";
-                                    mandaQry(sqryf);
-                                }catch (Exception e)
+                                    sqryf = $"SELECT * FROM trip_seat WHERE internet_sale_id='{Convert.ToString(row["id"])}'";
+                                    DataTable tscr = mandaQry(sqryf);
+                                    if(tscr.Rows.Count > 0)
+                                    {
+                                        Console.WriteLine();
+                                        sqryf = $"insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status, F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id, f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name, 'Serv_Liberar_Asiento_245',f.trip_id,f.version,f.date_created, CURRENT_TIMESTAMP from trip_seat f where f.internet_sale_id = '{row["id"].ToString()}'";
+                                        mandaQry(sqryf);
+                                        Console.WriteLine();
+                                        sqryf = $"DELETE FROM trip_seat WHERE internet_sale_id = '{row["id"].ToString()}'";
+                                        mandaQry(sqryf);
+                                        Console.WriteLine();
+                                    }
+                                    else
+                                    {
+                                        sqryf = $"SELECT * FROM cancel_reservation WHERE internet_sale_id='{Convert.ToString(row["id"])}' AND comments='Serv_Liberar_Asiento'";
+                                        tscr = mandaQry(sqryf);
+                                        if(tscr.Rows.Count > 0)
+                                        {
+                                            sqryf = "UPDATE cancel_reservation SET comments='Serv_Liberar_Asiento_245' WHERE internet_sale_id='" + Convert.ToString(row["id"]) + "'";
+                                            mandaQry(sqryf);
+                                            Console.WriteLine();
+                                        }
+                                    }
+                                    
+                                }
+                                catch (Exception e)
                                 {
                                     Logs.crealogs(DateTime.Now.ToString() + " " + e.Message);
                                 }                                
@@ -506,7 +176,7 @@ namespace ConsultaWebApisPagos
                             }
                         }
                     }
-                    else if (Convert.ToString(row["payed"]) == "True" && Convert.ToString(row["source_meta"]) == "")
+                    else if (Convert.ToString(row["payed"]) == "True")
                     {
                         Logs.crealogs("\n" + DateTime.Now.ToString() + " Status internet_sale: " + row["payed"]);
                         origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
@@ -518,6 +188,13 @@ namespace ConsultaWebApisPagos
                         foreach (DataRow a in t.Rows)
                         {
                             ticket = a["ticket_id"].ToString();
+                            if(ticket == "")
+                            {
+                                while (ticket == "")
+                                {
+                                    ticket = GenerarBoleto(Convert.ToString(row["id"]));
+                                }                                
+                            }
                         }
                         bool v = false;
                         v = VerificarMasterCard(row["short_id"].ToString());
@@ -676,12 +353,35 @@ namespace ConsultaWebApisPagos
             string sqry2 = "UPDATE detail_sale SET status_payment=true,date_updated='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' WHERE id_detail=" + id_detail;
             tbl1 = mandaQry(sqry2);*/
             int tick = 0, cont = 0;
-            String GetBol = "SELECT * FROM trip_seat WHERE internet_sale_id='" + internet_sale_id + "'";
+            string GetBol = "SELECT * FROM trip_seat WHERE internet_sale_id='" + internet_sale_id + "'";
             DataTable tbl2 = new DataTable();
             tbl2 = mandaQry(GetBol);
-            foreach (DataRow row3 in tbl2.Rows)
+            string ticketid = GenShortId();
+            if (tbl2.Rows.Count == 0)
             {
-                string ticketid = GenShortId();
+                string query = $"SELECT * FROM cancel_reservation WHERE internet_sale_id='{internet_sale_id}'";
+                DataTable tbl3 = new DataTable();
+                tbl3 = mandaQry(query);
+                if(tbl3.Rows.Count > 0)
+                {
+                     query = $@"insert into trip_seat(id,version,date_created,last_updated,seat_id,status,starting_stop_id,ending_stop_id,
+					  internet_sale_id,trip_id,seat_name,passenger_name,ticket_id,comments,passenger_type,user_id,sold_price,
+					  payed_price,original_price)
+                      select id,version,date_created,last_updated,seat_id,'OCCUPIED',starting_stop_id,ending_stop_id,
+					  internet_sale_id,trip_id,seat_name,passenger_name,null,'Regreso validacion 2',passenger_type,user_id,sold_price,
+					  payed_price,sold_price  from cancel_reservation where internet_sale_id='{internet_sale_id}' LIMIT 1";
+
+                    query = $"UPDATE internet_sale SET source_meta='Validado y envio de correo', payed=true WHERE id='{internet_sale_id}'";
+                    mandaQry(query);
+
+                    tbl2 = new DataTable();
+                    mandaQry(query);
+                    tbl2 = mandaQry(GetBol);
+                }                
+            }
+
+            foreach (DataRow row3 in tbl2.Rows)
+            {                
                 res = ticketid;
                 while (tick == 0)
                 {
@@ -788,14 +488,15 @@ namespace ConsultaWebApisPagos
             DataTable tbl = new DataTable();
             bool Result = true;
             Console.WriteLine("Inicio: " + hora_inicio);
-            DateTime dateTime = DateTime.Now.AddHours(-2); // Obtén la hora actual
+            DateTime dateTime = DateTime.Now; // Obtén la hora actual
 
             string formattedDateTime = dateTime.ToString("yyyy-MM-dd HH:mm:ss.fffzzz");
+            string formattedDateTimem = dateTime.AddHours(-2).ToString("yyyy-MM-dd HH:mm:ss.fffzzz");
             //string sqry = "SELECT * FROM internet_sale WHERE id='024da958-d486-4d02-b09c-5cd379eaa8fb'";
             //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%paypal%' AND date_created > '2022-12-07 10:36:00' ORDER BY date_created ASC";
             //string sqry = "select * from internet_sale where email like '%linkrodriguez897@gmail.com%' order by date_created desc";
-            string sqry = $"SELECT * FROM internet_sale WHERE (payment_provider LIKE '%paypal%'  OR payment_provider like '%mastercardGateway%') AND  date_created > '{formattedDateTime}' AND source_meta IS NULL ORDER BY date_created ASC ";
-            //string sqry = "SELECT * FROM internet_sale WHERE email='luis117rojas@gmail.com' AND payment_provider LIKE '%ay%al%' AND date_created < '" + fechaFormateadai + "' AND date_created > '" + fechaFormateadaf + "' AND source_meta IS NULL AND bill_pdf is null ORDER BY date_created ASC";
+            string sqry = $"SELECT * FROM internet_sale WHERE (payment_provider LIKE '%paypal%' OR payment_provider LIKE '%ay%al%' OR payment_provider like '%mastercardGateway%') AND date_created > '{formattedDateTimem}' AND  date_created < '{formattedDateTime}' AND ((source_meta NOT LIKE 'Validado y envio de correo' AND source_meta NOT LIKE '%Envio de correo%') OR source_meta IS NULL) ORDER BY date_created ASC ";
+            //string sqry = "SELECT * FROM internet_sale WHERE short_id='98f8e170'";
             try
             {
                 tbl = mandaQry(sqry);
@@ -822,7 +523,12 @@ namespace ConsultaWebApisPagos
                             Logs.crealogs(DateTime.Now.ToString() + " verificacion correcta: " + verificacion.ToString());
                             try
                             {
-                                string ticket = GenerarBoleto(Convert.ToString(row["id"]));
+                                string ticket = "";
+                                while (ticket == "")
+                                {
+                                    ticket = GenerarBoleto(Convert.ToString(row["id"]));
+                                }
+                                    
                                 Console.WriteLine("Se genero el ticket correctamente");
                                 Logs.crealogs(DateTime.Now.ToString() + " Se genero el ticket correctamente: " + ticket);
                                 origen = ObtenerLugar(Convert.ToString(row["short_id"]), Convert.ToString(row["id"]), "origen");
@@ -835,7 +541,7 @@ namespace ConsultaWebApisPagos
                                 Logs.crealogs(DateTime.Now.ToString() + " Exito se verifico el pago: " + row["short_id"].ToString());
                                 try
                                 {
-                                    //EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                                    EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                                     concepto = "Validado y envio de correo";
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
@@ -867,8 +573,8 @@ namespace ConsultaWebApisPagos
                         else
                         {
                             DateTime fechaHora = DateTime.Parse(row["date_created"].ToString());
-                            fechaHora = fechaHora.AddHours(-5);
-                            if (op == "1" && DateTime.Now >= fechaHora)
+                            fechaHora = fechaHora.AddHours(+1);
+                            if (op == "1" && DateTime.Now > fechaHora)
                             {
                                 concepto = "No se valido el boleto en 1 hr";
 
@@ -877,11 +583,29 @@ namespace ConsultaWebApisPagos
                                 
                                 try
                                 {
-                                    sqryf = $"insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status, F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id, f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name, 'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created, CURRENT_TIMESTAMP from trip_seat f where f.internet_sale_id = '{row["id"].ToString()}'";
-                                    mandaQry(sqryf);
-
-                                    sqryf = $"DELETE FROM trip_seat WHERE internet_sale_id = '{row["id"].ToString()}'";
-                                    mandaQry(sqryf);
+                                    sqryf = $"SELECT * FROM trip_seat WHERE internet_sale_id='{Convert.ToString(row["id"])}'";
+                                    DataTable tscr = mandaQry(sqryf);
+                                    if (tscr.Rows.Count > 0)
+                                    {
+                                        Console.WriteLine();
+                                        sqryf = $"insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status, F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id, f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name, 'Serv_Liberar_Asiento_245',f.trip_id,f.version,f.date_created, CURRENT_TIMESTAMP from trip_seat f where f.internet_sale_id = '{row["id"].ToString()}'";
+                                        mandaQry(sqryf);
+                                        Console.WriteLine();
+                                        sqryf = $"DELETE FROM trip_seat WHERE internet_sale_id = '{row["id"].ToString()}'";
+                                        mandaQry(sqryf);
+                                        Console.WriteLine();
+                                    }
+                                    else
+                                    {
+                                        sqryf = $"SELECT * FROM cancel_reservation WHERE internet_sale_id='{Convert.ToString(row["id"])}' AND comments='Serv_Liberar_Asiento'";
+                                        tscr = mandaQry(sqryf);
+                                        if (tscr.Rows.Count > 0)
+                                        {
+                                            sqryf = "UPDATE cancel_reservation SET comments='Serv_Liberar_Asiento_245' WHERE internet_sale_id='" + Convert.ToString(row["id"]) + "'";
+                                            mandaQry(sqryf);
+                                            Console.WriteLine();
+                                        }
+                                    }
                                 }
                                 catch (Exception e)
                                 {
@@ -905,6 +629,13 @@ namespace ConsultaWebApisPagos
                         foreach (DataRow a in t.Rows)
                         {
                             ticket = a["ticket_id"].ToString();
+                            if (ticket == "")
+                            {
+                                while (ticket == "")
+                                {
+                                    ticket = GenerarBoleto(Convert.ToString(row["id"]));
+                                }
+                            }
                         }
                         bool v = VerificarPayPal(Convert.ToString(row["full_response"]), Convert.ToString(row["total_amount"]), Convert.ToString(row["short_id"]), Convert.ToString(row["id"]));
                         if (fechas != "0" && v == true)
@@ -913,7 +644,7 @@ namespace ConsultaWebApisPagos
                             fecha_salida = temp_fechas[0];
                             fecha_llegada = temp_fechas[1];
                             Console.WriteLine("Exito solo se enviara el correo");
-                            //EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
+                            EnvioMail.EnviaCorreo(Convert.ToString(row["email"]), ticket, Convert.ToString(row["short_id"]), origen, destino, fecha_salida, fecha_llegada, decimal.Round(Convert.ToDecimal(row["total_amount"])));
                             concepto = "Envio de correo";
                             string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                             mandaQry(sqryf);
@@ -1218,7 +949,7 @@ namespace ConsultaWebApisPagos
                         mandaQry(sqry);
                         try
                         {
-                            sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                            sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
                             mandaQry(sqry);
                             Logs.crealogs(DateTime.Now.ToString() + " Boleto movido a cancel reservation: " + internet_sale_id);
                         }
@@ -1259,7 +990,7 @@ namespace ConsultaWebApisPagos
                             foreach (DataRow fila2 in tbl2.Rows)
                             {
                                 departure_date_corrida = DateTime.Parse(fila2["departure_date"].ToString());
-                                departure_date_corrida = departure_date_corrida.AddHours(-6);
+                                //departure_date_corrida = departure_date_corrida.AddHours(-6);
 
 
                                 if (dateTime >= departure_date_corrida)
@@ -1276,7 +1007,7 @@ namespace ConsultaWebApisPagos
                                     }
                                     try
                                     {
-                                        sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_Sistema_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                                        sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
                                         mandaQry(sqry);
                                         Logs.crealogs(DateTime.Now.ToString() + " Asiento liberado correctamente: " + internet_sale_id);
                                     }
