@@ -51,12 +51,9 @@ namespace ConsultaWebApisPagos
                             AND date_created >= CURRENT_DATE - INTERVAL '5 hour' 
                             ORDER BY date_created DESC";
             //string sqry = "SELECT * FROM internet_sale where email='luis117rojas@gmail.com' and source_meta is null and payed=false";
-            //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%mastercard%' AND date_created > '2022-12-07 23:37:00' ORDER BY date_created ASC";
-            //string sqry = "SELECT payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider FROM internet_sale WHERE payment_provider LIKE '%aster%ard%' AND date_created >= now() - interval '70 minutes' AND source_meta IS NULL ORDER BY date_created ASC";
             //string sqry = $"select * from internet_sale where payment_provider like '%aster%ard%' AND NOT payment_provider like '%Gateway%' AND source_meta IS NULL AND date_created > '{formattedDateTime}' order by date_created desc";
-            //string sqry = $"select * from internet_sale where payment_provider like '%aster%ard%' AND short_id='cbd626f2'";
-            //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider from internet_sale is2 where \r\nextract (month from date_created)=extract(month from now()) and extract(year from date_created)=extract(year from now())\r\nand source_meta is null and upper(payment_provider) like upper('%aster%ard%')";
-            //string sqry = "select payed,id,short_id,email,total_amount, date_created,source_meta,payment_provider \r\nfrom internet_sale \r\nwhere date_created >='2023-04-01' \r\nand payment_provider like '%aster%ard%'\r\nand source_meta is null";
+            //string sqry = $"select * from internet_sale where payment_provider like '%aster%ard%' AND short_id='add9d2de'";
+            
             try
             {
                 tbl = mandaQry(sqry);
@@ -118,15 +115,16 @@ namespace ConsultaWebApisPagos
                             catch
                             {
                                 if (op == "1")
-                                {
+                                { 
                                     concepto = "Error al generar ticket para: " + short_id.ToString();
                                     string sqryf = "UPDATE internet_sale SET source_meta='" + concepto + "' WHERE id='" + Convert.ToString(row["id"]) + "'";
                                     mandaQry(sqryf);
                                     Console.WriteLine("Error al generar ticket para: " + short_id);
                                     Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + short_id);
                                     EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                    EnvioMail.EnviaCorreo("alejandro.horta@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
                                     EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
-                                    Logs.crealogs(DateTime.Now.ToString() + " Correo enviado a: luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com");
+                                    Logs.crealogs(DateTime.Now.ToString() + " Correo enviado a: luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com alejandro.horta@transportesmedrano.com");
                                 }
 
                             }
@@ -491,12 +489,11 @@ namespace ConsultaWebApisPagos
             DateTime dateTime = DateTime.Now; // Obtén la hora actual
 
             string formattedDateTime = dateTime.ToString("yyyy-MM-dd HH:mm:ss.fffzzz");
-            string formattedDateTimem = dateTime.AddHours(-2).ToString("yyyy-MM-dd HH:mm:ss.fffzzz");
-            //string sqry = "SELECT * FROM internet_sale WHERE id='024da958-d486-4d02-b09c-5cd379eaa8fb'";
-            //string sqry = "SELECT * FROM internet_sale WHERE payment_provider LIKE '%paypal%' AND date_created > '2022-12-07 10:36:00' ORDER BY date_created ASC";
+            string formattedDateTimem = dateTime.AddHours(-2).ToString("yyyy-MM-dd HH:mm:ss.fffzzz"); 
+            
             //string sqry = "select * from internet_sale where email like '%linkrodriguez897@gmail.com%' order by date_created desc";
-            string sqry = $"SELECT * FROM internet_sale WHERE (payment_provider LIKE '%paypal%' OR payment_provider LIKE '%ay%al%' OR payment_provider like '%mastercardGateway%') AND date_created > '{formattedDateTimem}' AND  date_created < '{formattedDateTime}' AND ((source_meta NOT LIKE 'Validado y envio de correo' AND source_meta NOT LIKE '%Envio de correo%') OR source_meta IS NULL) ORDER BY date_created ASC ";
-            //string sqry = "SELECT * FROM internet_sale WHERE short_id='98f8e170'";
+            string sqry = $"SELECT * FROM internet_sale WHERE (payment_provider LIKE '%paypal%' OR payment_provider LIKE '%ay%al%' OR payment_provider like '%mastercardGateway%') AND date_created > '{formattedDateTimem}' AND  date_created < '{formattedDateTime}' AND ((source_meta NOT LIKE 'Validado y envio de correo' AND source_meta NOT LIKE '%Envio de correo%') OR source_meta IS NULL) ORDER BY date_created DESC ";
+            //string sqry = "SELECT * FROM internet_sale WHERE short_id='R9WAL1VA'";
             try
             {
                 tbl = mandaQry(sqry);
@@ -564,8 +561,9 @@ namespace ConsultaWebApisPagos
                                     mandaQry(sqryf);
                                     Console.WriteLine("Error al generar ticket para: " + short_id);
                                     EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
+                                    EnvioMail.EnviaCorreo("alejandro.horta@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
                                     EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", "", Convert.ToString(row["short_id"]), "", "", "", "", 0);
-                                    Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + row["short_id"].ToString() + "Envio correo a luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com");
+                                    Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + row["short_id"].ToString() + "Envio correo a luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com alejandro.horta@transportesmedrano.com");
                                 }
                             }
 
@@ -854,6 +852,7 @@ namespace ConsultaWebApisPagos
                 DataTable tbl = new DataTable();
                 bool Result = true;
                 string sqry = "select t1.id_pago,t1.internet_sale_id,t2.short_id,t2.email,t2.total_amount from pagos_procesados t1 \r\ninner join internet_sale t2 on t1.internet_sale_id=t2.id \r\nwhere t1.id_estado = 1";
+                //string sqry = "select t1.id_pago,t1.internet_sale_id,t2.short_id,t2.email,t2.total_amount from pagos_procesados t1 inner join internet_sale t2 on t1.internet_sale_id=t2.id where t1.id_estado = 3 and t1.internet_sale_id='1d6f33e6-c08e-41b2-93e1-f0eb970c882b'";
                 tbl = mandaQry(sqry);
                 if (tbl.Rows.Count == 0) return false;
                 foreach (DataRow row in tbl.Rows)
@@ -938,8 +937,9 @@ namespace ConsultaWebApisPagos
                             mandaQry(sqryf);
                             Console.WriteLine("Error al generar ticket para: " + short_id);
                             EnvioMail.EnviaCorreo("luis.rojas@transportesmedrano.com", "", short_id, "", "", "", "", 0);
+                            EnvioMail.EnviaCorreo("alejandro.horta@transportesmedrano.com", "", short_id, "", "", "", "", 0);
                             EnvioMail.EnviaCorreo("viridiana.fh@transportesmedrano.com", "", short_id, "", "", "", "", 0);
-                            Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + short_id.ToString() + "Correo enviado a luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com");
+                            Logs.crealogs(DateTime.Now.ToString() + " Error al generar ticket para: " + short_id.ToString() + "Correo enviado a luis.rojas@transportesmedrano.com viridiana.fh@transportesmedrano.com alejandro.horta@transportesmedrano.com");
                         }
                     }
                     if ((Convert.ToString(rs[0].status)).ToUpper() == "CANCELLED")
@@ -947,9 +947,12 @@ namespace ConsultaWebApisPagos
                         Logs.crealogs(DateTime.Now.ToString() + " Se cancelo el pago para: " + short_id + " status: " + rs[0].status.ToString());
                         string sqry = "UPDATE pagos_procesados set id_estado=3,estatus='CANCELADO' ,fecha_enviado='" + (fecha.Year + "-" + fecha.Month + "-" + fecha.Day + " " + fecha.Hour + ":" + fecha.Minute + ":" + fecha.Second) + "' where id_pago='" + idPago + "'";
                         mandaQry(sqry);
+                        
                         try
                         {
                             sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                            mandaQry(sqry);
+                            sqry = $"UPDATE internet_sale SET source_meta = 'No se valido el boleto en 1hr' WHERE id='{internet_sale_id}'";
                             mandaQry(sqry);
                             Logs.crealogs(DateTime.Now.ToString() + " Boleto movido a cancel reservation: " + internet_sale_id);
                         }
@@ -1008,6 +1011,8 @@ namespace ConsultaWebApisPagos
                                     try
                                     {
                                         sqry = "insert into cancel_reservation(id, status, internet_sale_id, seat_id, starting_stop_id,ending_stop_id, user_id, passenger_type, sold_price, payed_price,seat_name, passenger_name, comments, trip_id, version, date_created, last_updated)select F.id, F.status,F.internet_sale_id,f.seat_id,f.starting_stop_id,f.ending_stop_id,f.user_id,f.passenger_type,f.sold_price,f.payed_price,f.seat_name,f.passenger_name,'Serv_Liberar_Asiento_245',f.trip_id,f.version,f.date_created,CURRENT_TIMESTAMP from trip_seat f where internet_sale_id = '" + internet_sale_id + "'";
+                                        mandaQry(sqry);
+                                        sqry = $"UPDATE internet_sale SET source_meta = 'No se valido el boleto en 1hr' WHERE id='{internet_sale_id}'";
                                         mandaQry(sqry);
                                         Logs.crealogs(DateTime.Now.ToString() + " Asiento liberado correctamente: " + internet_sale_id);
                                     }

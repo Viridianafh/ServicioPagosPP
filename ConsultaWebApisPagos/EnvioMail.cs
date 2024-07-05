@@ -28,6 +28,7 @@ namespace ConsultaWebApisPagos
                 correo.To.Add(mailDestinatario); //Correo destino?
                 correo.Bcc.Add("luis.rojas@transportesmedrano.com"); // Agregar una copia (CC)
                 correo.Bcc.Add("viridiana.fh@transportesmedrano.com"); // Agregar una copia (CC)
+                correo.Bcc.Add("alejandro.horta@transportesmedrano.com"); // Agregar una copia (CC)
                 correo.Subject = "Boletos SAG"; //Asunto
                                                 //correo.Body = MensajeHtml(ShortdId,Origen,Destino,fechaSalida.ToString("dd/MM/yyyy HH:mm"),fechaLlegada.ToString("dd/MM/yyyy HH:mm"), Total);
                 correo.AlternateViews.Add(MensajeHtml(ticketid, ShortdId, Origen, Destino, fechaSalida, fechaLlegada, Total));
