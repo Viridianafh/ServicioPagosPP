@@ -54,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ConsultaWebApisPagos.exe" size="98816">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ConsultaWebApisPagos.exe" size="65536">
       <assemblyIdentity name="ConsultaWebApisPagos" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>s9zn6MKmqJzgzeQ5jmeSgcub46FEkb+xXgvjs4dzxRI=</dsig:DigestValue>
+        <dsig:DigestValue>chfYESff+c1XOX2F0AMBWi7hQ/W/dt9KsH3WSwC6kNw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

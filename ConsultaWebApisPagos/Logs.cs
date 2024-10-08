@@ -13,7 +13,7 @@ namespace ConsultaWebApisPagos
         {
             DateTime now = DateTime.Now;
             string fecsnhr=now.ToString("dd-MM-yyyy");
-            string nombreArchivo = "Log_Valida_Pago"+fecsnhr+".txt";
+            string nombreArchivo = "Log_Valida_Pago_PayPal"+fecsnhr+".txt";
             string ruta = "C:/Logs_validador_pagos/" + nombreArchivo;
 
             using (FileStream fs = new FileStream(ruta, FileMode.Append, FileAccess.Write))

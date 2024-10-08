@@ -129,6 +129,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseDatos.cs" />
     <Compile Include="EnvioMail.cs" />
     <Compile Include="Logs.cs" />
     <Compile Include="Metodos.cs" />
